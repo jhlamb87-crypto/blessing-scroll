@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>축복의 말씀 두루마리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fff6ea;
+    --peach: #ffe3c9;
+    --coral: #e8875f;
+    --coral-dark: #d4703f;
+    --gold: #d4a24e;
+    --text: #6b4a37;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: radial-gradient(circle at 50% 0%, var(--peach) 0%, var(--cream) 60%);
+    font-family: 'Gowun Batang', serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  .wrap {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 40px;
+    max-width: 460px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    color: var(--coral-dark);
+  }
+  .sub {
+    font-family: 'Gaegu', cursive;
+    font-size: 1.05rem;
+    color: var(--text);
+    opacity: .85;
+    margin: 0 0 34px;
+    line-height: 1.5;
+  }
+  .stage {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cookie-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  .cookie-btn:active { transform: scale(.96); }
+  .cookie-btn svg { width: 84px; height: 210px; filter: drop-shadow(0 10px 14px rgba(180,120,70,.3)); }
+
+  .half {
+    position: absolute;
+    width: 70px;
+    height: 210px;
+    pointer-events: none;
+    transition: transform .6s cubic-bezier(.34,1.3,.64,1);
+    filter: drop-shadow(0 10px 14px rgba(180,120,70,.3));
+  }
+  .half.left { transform: translateX(-32px); }
+  .half.right { transform: translateX(32px); }
+  .stage.cracked .half.left { transform: translateX(-128px); }
+  .stage.cracked .half.right { transform: translateX(128px); }
+  .stage.cracked .cookie-btn { opacity: 0; pointer-events: none; transition: opacity .25s; }
+
+  .sparkle {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .stage.cracked .sparkle { opacity: 1; animation: pop .7s ease-out; }
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(.6); }
+    40% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0; transform: scale(1.3); }
+  }
+
+  .card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 250px;
+    background: linear-gradient(180deg, #fdf6e4 0%, #faf0d8 100%);
+    border: 1px solid #e3cfa4;
+    border-radius: 8px;
+    padding: 22px 18px 20px;
+    box-shadow: 0 14px 30px rgba(150,90,40,.22);
+    transform: translate(-50%, -50%) scaleX(.08) scaleY(.92);
+    opacity: 0;
+    transition: transform .55s cubic-bezier(.2,1.3,.4,1) .2s, opacity .35s ease .2s;
+    pointer-events: none;
+  }
+  .stage.cracked .card {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .card .mark { font-size: 1.3rem; margin-bottom: 8px; }
+  .card .verse {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 0 0 12px;
+    word-break: keep-all;
+  }
+  .card .ref {
+    font-family: 'Gaegu', cursive;
+    font-size: .95rem;
+    color: var(--coral);
+    font-weight: 700;
+  }
+
+  .again-btn {
+    margin-top: 28px;
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 13px 26px;
+    font-family: 'Gaegu', cursive;
+    font-size: 1.05rem;
+    font-weight: 700;
+    box-shadow: 0 8px 16px rgba(212,112,63,.35);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .4s ease .5s, transform .4s ease .5s;
+    pointer-events: none;
+  }
+  .stage.cracked ~ .again-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .again-btn:active { transform: scale(.96); }
+
+  .hint {
+    margin-top: 18px;
+    font-family: 'Gaegu', cursive;
+    font-size: .9rem;
+    color: var(--coral);
+    opacity: .8;
+  }
+  .stage.cracked ~ .hint { display: none; }
+
+  footer {
+    margin-top: auto;
+    padding-top: 30px;
+    font-family: 'Gaegu', cursive;
+    font-size: .85rem;
+    color: var(--text);
+    opacity: .55;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📜 축복의 말씀 두루마리</h1>
+  <p class="sub">처음 봉사에 함께해 주셔서 감사해요!<br>오늘 당신을 향한 말씀 한 구절을 펼쳐보세요.</p>
+
+  <div class="stage" id="stage">
+    <button class="cookie-btn" id="cookieBtn" aria-label="두루마리 펼치기">
+      <svg viewBox="0 0 84 210"><rect x="8" y="32" width="68" height="146" fill="#f7ecd2" stroke="#d8bd8e" stroke-width="2"/><g stroke="#d9c294" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="20" y1="60" x2="64" y2="60"/><line x1="20" y1="80" x2="64" y2="80"/><line x1="20" y1="100" x2="58" y2="100"/><line x1="20" y1="120" x2="64" y2="120"/><line x1="20" y1="140" x2="52" y2="140"/></g></svg>
+    </button>
+
+    <div class="half left"><svg viewBox="0 0 70 210"><rect x="31" y="8" width="8" height="194" rx="4" fill="#a9762f"/><circle cx="35" cy="12" r="9" fill="#c08b45" stroke="#a9762f" stroke-width="2"/><circle cx="35" cy="198" r="9" fill="#c08b45" stroke="#a9762f" stroke-width="2"/><rect x="13" y="24" width="44" height="162" rx="20" fill="#f2e0bd" stroke="#cfa96a" stroke-width="3"/><path d="M50 34 C55 74 55 136 50 176" stroke="#d8bd8e" fill="none" stroke-width="2"/></svg></div>
+    <div class="half right"><svg viewBox="0 0 70 210"><rect x="31" y="8" width="8" height="194" rx="4" fill="#a9762f"/><circle cx="35" cy="12" r="9" fill="#c08b45" stroke="#a9762f" stroke-width="2"/><circle cx="35" cy="198" r="9" fill="#c08b45" stroke="#a9762f" stroke-width="2"/><rect x="13" y="24" width="44" height="162" rx="20" fill="#f2e0bd" stroke="#cfa96a" stroke-width="3"/><path d="M20 34 C15 74 15 136 20 176" stroke="#d8bd8e" fill="none" stroke-width="2"/></svg></div>
+
+    <div class="sparkle">✨</div>
+
+    <div class="card" id="card">
+      <div class="mark">🕊️</div>
+      <p class="verse" id="verseText"></p>
+      <div class="ref" id="verseRef"></div>
+    </div>
+  </div>
+
+  <p class="hint" id="hintText">두루마리를 톡 눌러 펼쳐보세요 👆</p>
+  <button class="again-btn" id="againBtn">다시 뽑기</button>
+
+  <footer>함께해 주셔서 감사합니다 🙏</footer>
+</div>
+
+<script>
+const VERSES = [
+  { text: "내가 진실로 너희에게 이르노니 너희가 여기 내 형제 중에 지극히 작은 자 하나에게 한 것이 곧 내게 한 것이니라", ref: "마태복음 25:40" },
+  { text: "주는 것이 받는 것보다 복이 있다 하심을 기억하여야 할찌니라", ref: "사도행전 20:35" },
+  { text: "구제를 좋아하는 자는 풍족하여질 것이요 남을 윤택하게 하는 자는 윤택하여지리라", ref: "잠언 11:25" },
+  { text: "우리가 선을 행하되 낙심하지 말찌니 피곤하지 아니하면 때가 이르매 거두리라", ref: "갈라디아서 6:9" },
+  { text: "항상 주의 일에 더욱 힘쓰는 자들이 되라 이는 너희 수고가 주 안에서 헛되지 않은 줄을 앎이니라", ref: "고린도전서 15:58" },
+  { text: "무슨 일을 하든지 마음을 다하여 주께 하듯하고 사람에게 하듯하지 말라 너희는 주 그리스도를 섬기느니라", ref: "골로새서 3:23-24" },
+  { text: "가난한 자를 불쌍히 여기는 것은 여호와께 꾸이는 것이니 그 선행을 갚아 주시리라", ref: "잠언 19:17" },
+  { text: "인자의 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라", ref: "마가복음 10:45" },
+  { text: "내가 너희에게 행한 것 같이 너희도 행하게 하려 하여 본을 보였노라", ref: "요한복음 13:15" },
+  { text: "하나님이 불의치 아니하사 너희 행위와 그의 이름을 위하여 나타낸 사랑으로 이미 성도를 섬긴 것과 이제도 섬기는 것을 잊어버리지 아니하시느니라", ref: "히브리서 6:10" },
+  { text: "각각 은사를 받은대로 하나님의 각양 은혜를 맡은 선한 청지기 같이 서로 봉사하라", ref: "베드로전서 4:10" },
+  { text: "오직 선을 행함과 서로 나눠주기를 잊지 말라 이같은 제사는 하나님이 기뻐하시느니라", ref: "히브리서 13:16" },
+  { text: "빈약한 자를 권고하는 자가 복이 있음이여 재앙의 날에 여호와께서 저를 건지시리로다", ref: "시편 41:1" },
+  { text: "주라 그리하면 너희에게 줄 것이니 곧 후히 되어 누르고 흔들어 넘치도록 하여 너희에게 안겨 주리라", ref: "누가복음 6:38" },
+  { text: "선한 눈을 가진 자는 복을 받으리니 이는 양식을 가난한 자에게 줌이니라", ref: "잠언 22:9" },
+  { text: "부지런하여 게으르지 말고 열심을 품고 주를 섬기라", ref: "로마서 12:11" },
+  { text: "단 마음으로 섬기기를 주께 하듯하고 사람들에게 하듯하지 말라", ref: "에베소서 6:7" },
+  { text: "그 자유로 육체의 기회를 삼지 말고 오직 사랑으로 서로 종노릇하라", ref: "갈라디아서 5:13" },
+  { text: "선한 일을 행하고 선한 사업에 부하고 나눠주기를 좋아하며 동정하는 자가 되게 하라", ref: "디모데전서 6:18" },
+  { text: "이같이 너희 빛을 사람 앞에 비취게 하여 저희로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라", ref: "마태복음 5:16" }
+];
+
+const stage = document.getElementById('stage');
+const cookieBtn = document.getElementById('cookieBtn');
+const againBtn = document.getElementById('againBtn');
+const verseText = document.getElementById('verseText');
+const verseRef = document.getElementById('verseRef');
+const hintText = document.getElementById('hintText');
+
+let lastIndex = -1;
+function pickVerse() {
+  let i = Math.floor(Math.random() * VERSES.length);
+  if (VERSES.length > 1 && i === lastIndex) i = (i + 1) % VERSES.length;
+  lastIndex = i;
+  return VERSES[i];
+}
+
+function crackOpen() {
+  const v = pickVerse();
+  verseText.textContent = v.text;
+  verseRef.textContent = v.ref;
+  stage.classList.add('cracked');
+}
+
+function resetCookie() {
+  stage.classList.remove('cracked');
+}
+
+cookieBtn.addEventListener('click', crackOpen);
+againBtn.addEventListener('click', resetCookie);
+</script>
+</body>
+</html>
