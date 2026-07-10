@@ -137,29 +137,41 @@
     font-weight: 700;
   }
 
-  .again-btn {
+  .btn-row {
     margin-top: 28px;
-    background: var(--coral);
-    color: #fff;
-    border: none;
-    border-radius: 999px;
-    padding: 13px 26px;
-    font-family: 'Gaegu', cursive;
-    font-size: 1.05rem;
-    font-weight: 700;
-    box-shadow: 0 8px 16px rgba(212,112,63,.35);
-    cursor: pointer;
+    display: flex;
+    gap: 12px;
     opacity: 0;
     transform: translateY(10px);
     transition: opacity .4s ease .5s, transform .4s ease .5s;
     pointer-events: none;
   }
-  .stage.cracked ~ .again-btn {
+  .stage.cracked ~ .btn-row {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
-  .again-btn:active { transform: scale(.96); }
+  .again-btn, .dl-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 13px 24px;
+    font-family: 'Gaegu', cursive;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .again-btn {
+    background: var(--coral);
+    color: #fff;
+    box-shadow: 0 8px 16px rgba(212,112,63,.35);
+  }
+  .dl-btn {
+    background: #fffdf8;
+    color: var(--coral-dark);
+    border: 2px solid var(--coral);
+    box-shadow: 0 8px 16px rgba(212,112,63,.18);
+  }
+  .again-btn:active, .dl-btn:active { transform: scale(.96); }
 
   .hint {
     margin-top: 18px;
@@ -203,7 +215,10 @@
   </div>
 
   <p class="hint" id="hintText">두루마리를 톡 눌러 펼쳐보세요 👆</p>
-  <button class="again-btn" id="againBtn">다시 뽑기</button>
+  <div class="btn-row">
+    <button class="again-btn" id="againBtn">다시 뽑기</button>
+    <button class="dl-btn" id="dlBtn">📥 이미지 저장</button>
+  </div>
 
   <footer>함께해 주셔서 감사합니다 🙏</footer>
 </div>
@@ -260,6 +275,111 @@ function resetCookie() {
 
 cookieBtn.addEventListener('click', crackOpen);
 againBtn.addEventListener('click', resetCookie);
+
+// ----- 카드 이미지 다운로드 -----
+const dlBtn = document.getElementById('dlBtn');
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxWidth && line) { lines.push(line); line = w; }
+    else line = t;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+async function downloadCard() {
+  const text = verseText.textContent;
+  const ref = verseRef.textContent;
+  if (!text) return;
+
+  try { await document.fonts.load('54px "Gowun Batang"'); await document.fonts.load('44px "Gaegu"'); } catch (e) {}
+
+  const W = 1080, H = 1350;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#ffe3c9');
+  bg.addColorStop(.6, '#fff6ea');
+  bg.addColorStop(1, '#fff6ea');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#d4703f';
+  ctx.font = '700 46px "Gaegu", sans-serif';
+  ctx.fillText('📜 축복의 말씀 두루마리', W / 2, 130);
+
+  ctx.font = '54px "Gowun Batang", serif';
+  const cardX = 90, cardW = W - 180;
+  const lines = wrapText(ctx, text, cardW - 120);
+  const lineH = 92;
+  const textBlockH = lines.length * lineH;
+  const cardH = textBlockH + 330;
+  const cardY = (H - cardH) / 2 + 30;
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(150,90,40,.25)';
+  ctx.shadowBlur = 40;
+  ctx.shadowOffsetY = 16;
+  const cardBg = ctx.createLinearGradient(0, cardY, 0, cardY + cardH);
+  cardBg.addColorStop(0, '#fdf6e4');
+  cardBg.addColorStop(1, '#faf0d8');
+  ctx.fillStyle = cardBg;
+  roundRect(ctx, cardX, cardY, cardW, cardH, 24);
+  ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = '#e3cfa4';
+  ctx.lineWidth = 3;
+  roundRect(ctx, cardX, cardY, cardW, cardH, 24);
+  ctx.stroke();
+
+  ctx.font = '64px serif';
+  ctx.fillText('🕊️', W / 2, cardY + 110);
+
+  ctx.fillStyle = '#6b4a37';
+  ctx.font = '54px "Gowun Batang", serif';
+  let ty = cardY + 220;
+  for (const line of lines) { ctx.fillText(line, W / 2, ty); ty += lineH; }
+
+  ctx.fillStyle = '#e8875f';
+  ctx.font = '700 44px "Gaegu", sans-serif';
+  ctx.fillText(ref, W / 2, ty + 30);
+
+  ctx.fillStyle = 'rgba(107,74,55,.55)';
+  ctx.font = '34px "Gaegu", sans-serif';
+  ctx.fillText('함께해 주셔서 감사합니다 🙏', W / 2, H - 90);
+
+  const fname = '말씀_' + ref.replace(/[:\s]/g, '_') + '.png';
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }, 'image/png');
+}
+
+dlBtn.addEventListener('click', downloadCard);
 </script>
 </body>
 </html>
