@@ -367,16 +367,27 @@ async function downloadCard() {
   ctx.fillText('함께해 주셔서 감사합니다 🙏', W / 2, H - 90);
 
   const fname = '말씀_' + ref.replace(/[:\s]/g, '_') + '.png';
-  canvas.toBlob(blob => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fname;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
-  }, 'image/png');
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+
+  const file = new File([blob], fname, { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: '축복의 말씀 두루마리' });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // 사용자가 공유 창을 닫음
+      // 공유 실패 시 아래 다운로드로 폴백
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
 dlBtn.addEventListener('click', downloadCard);
